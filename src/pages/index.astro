@@ -41,7 +41,7 @@
         }
 
         
-        #terminal a {
+        :global(#terminal a) {
             color: #ffff00;
             text-decoration: none;
             font-weight: normal;
@@ -165,7 +165,7 @@
             { type: 'back', count: 3 },
             { type: 'wait', ms: 200 },
             { type: 'type', text: "in' for, I'd be glad to discuss your ideas further. Feel free to reach out to me via " },
-            { type: 'html', html: '<a href="mailto:ittodz@linuxmail.org">email</a>' }
+            { type: 'html', html: '<a href="mailto:ittodz@linuxmail.org">email</a>.' }
         ];
 
         let seqIndex = 0;
@@ -236,7 +236,7 @@
                 
                 cursorEl.style.backgroundColor = '#00ff00';
                 outputEl.innerHTML = textBuffer + step.html;
-                textBuffer += outputEl.lastChild.outerHTML; 
+                textBuffer = outputEl.innerHTML;
                 seqIndex++;
                 setTimeout(runSequence, 200);
             }
