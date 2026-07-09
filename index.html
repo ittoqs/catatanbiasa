@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ignis Fatuus</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👋</text></svg>">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 18px;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                font-size: 16px;
+                padding: 15px;
+            }
+        }
+
+        #terminal {
+            width: 100%;
+            max-width: 800px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        /* Style untuk email diubah menjadi kuning menyala */
+        #terminal a {
+            color: #ffff00;
+            text-decoration: none;
+            font-weight: normal;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 1.2em;
+            background-color: #ffffff;
+            margin-left: 2px;
+            animation: blink 0.7s infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="terminal"><span id="output"></span><span class="cursor" id="cursor"></span></div>
+
+    <script>
+        const outputEl = document.getElementById('output');
+        const cursorEl = document.getElementById('cursor');
+        
+        // Command types: 
+        // 'type': ketik teks biasa
+        // 'back': hapus beberapa karakter belakang
+        // 'wait': jeda diam sejenak
+        // 'newline': turun ke baris baru
+        // 'html': memasukkan kode HTML langsung (untuk link email)
+        const sequence = [
+            // Baris 1: Hi, ... -> Hi there -> hapus -> Hello there ... -> Hello there 🖥️
+            { type: 'type', text: 'Hi there' },
+            { type: 'wait', ms: 500 },
+            { type: 'back', count: 8 },
+            { type: 'wait', ms: 300 },
+            { type: 'type', text: 'Hello there 👋' },
+            { type: 'newline' },
+
+            // Baris 2: I'm ... -> I'm Ittodz -> hapus -> It's Ittodz here... -> It's Ittodz here.
+            { type: 'type', text: "I'm Ittodz" },
+            { type: 'wait', ms: 500 },
+            { type: 'back', count: 10 },
+            { type: 'wait', ms: 300 },
+            { type: 'type', text: "It's Ittodz here 🇮🇩" },
+            { type: 'newline' },
+
+            // Baris 3: I enjoy experimentin' (experimenting -> experimentin') with the tech stack I’ve gathered.
+            { type: 'type', text: "I enjoy experiment" },
+            { type: 'wait', ms: 150 },
+            { type: 'type', text: "ing" },
+            { type: 'wait', ms: 400 },
+            { type: 'back', count: 3 },
+            { type: 'wait', ms: 200 },
+            { type: 'type', text: "in' with the tech stack I’ve gathered." },
+            { type: 'newline' },
+
+            // Baris 4: That said... explorin' (exploring -> explorin') ... programmin' (programming -> programmin') ... project requirements.
+            { type: 'type', text: "That said, I'm always open to explor" },
+            { type: 'wait', ms: 150 },
+            { type: 'type', text: "ing" },
+            { type: 'wait', ms: 400 },
+            { type: 'back', count: 3 },
+            { type: 'wait', ms: 200 },
+            { type: 'type', text: "in' other programm" },
+            { type: 'wait', ms: 150 },
+            { type: 'type', text: "ing" },
+            { type: 'wait', ms: 400 },
+            { type: 'back', count: 3 },
+            { type: 'wait', ms: 200 },
+            { type: 'type', text: "in' languages if they better fit the project requirements." },
+            { type: 'newline' },
+
+            // Baris 5: Professionally... virtual sandboxin' (sandboxining -> sandboxin') within the Linux ecosystem.
+            { type: 'type', text: "Professionally, I'm highly interested in CI/CD, isolated environments, and virtual sandbox" },
+            { type: 'wait', ms: 150 },
+            { type: 'type', text: "ing" },
+            { type: 'wait', ms: 400 },
+            { type: 'back', count: 3 },
+            { type: 'wait', ms: 200 },
+            { type: 'type', text: "in' within the Linux ecosystem." },
+            { type: 'newline' },
+
+            // Baris Tambahan 1: Collaboration & maintainin'
+            { type: 'type', text: "I always begin every collaboration by mak" },
+            { type: 'wait', ms: 150 },
+            { type: 'type', text: "ing" },
+            { type: 'wait', ms: 400 },
+            { type: 'back', count: 3 },
+            { type: 'wait', ms: 200 },
+            { type: 'type', text: "in' the best possible first impression and ensur" },
+            { type: 'wait', ms: 150 },
+            { type: 'type', text: "ing" },
+            { type: 'wait', ms: 400 },
+            { type: 'back', count: 3 },
+            { type: 'wait', ms: 200 },
+            { type: 'type', text: "in' that the same level of quality and professionalism is maintained until the outcome of the collaboration reaches its users." },
+            { type: 'newline' },
+
+            // Baris Tambahan 2: Focus & creatin'
+            { type: 'type', text: "My focus is on creat" },
+            { type: 'wait', ms: 150 },
+            { type: 'type', text: "ing" },
+            { type: 'wait', ms: 400 },
+            { type: 'back', count: 3 },
+            { type: 'wait', ms: 200 },
+            { type: 'type', text: "in' solutions that genuinely add value through tools that are easy to use, adaptable to evolv" },
+            { type: 'wait', ms: 150 },
+            { type: 'type', text: "ing" },
+            { type: 'wait', ms: 400 },
+            { type: 'back', count: 3 },
+            { type: 'wait', ms: 200 },
+            { type: 'type', text: "in' needs, easy to understand, and simple to maintain over the long term." },
+            { type: 'newline' },
+
+            // Baris Tambahan 3: Call to action & link email luar jaringan
+            { type: 'type', text: "If my approach aligns with what you're look" },
+            { type: 'wait', ms: 150 },
+            { type: 'type', text: "ing" },
+            { type: 'wait', ms: 400 },
+            { type: 'back', count: 3 },
+            { type: 'wait', ms: 200 },
+            { type: 'type', text: "in' for, I'd be glad to discuss your ideas further. Feel free to reach out to me via " },
+            { type: 'html', html: '<a href="mailto:ittodz@linuxmail.org">email</a>' }
+        ];
+
+        let seqIndex = 0;
+        let textBuffer = "";
+
+        function runSequence() {
+            if (seqIndex >= sequence.length) {
+                // Setelah teks semua selesai, kursor menjadi putih terang
+                cursorEl.style.backgroundColor = '#ffffff';
+                return;
+            }
+
+            const step = sequence[seqIndex];
+
+            if (step.type === 'type') {
+                // Kursor berwarna hijau menyala ketika menulis
+                cursorEl.style.backgroundColor = '#00ff00';
+                let charIndex = 0;
+                function typeChar() {
+                    if (charIndex < step.text.length) {
+                        textBuffer += step.text.charAt(charIndex);
+                        outputEl.textContent = textBuffer;
+                        charIndex++;
+                        // Kecepatan mengetik acak agar alami (50ms - 130ms)
+                        setTimeout(typeChar, Math.random() * 80 + 50);
+                    } else {
+                        seqIndex++;
+                        setTimeout(runSequence, 200);
+                    }
+                }
+                typeChar();
+            } 
+            
+            else if (step.type === 'back') {
+                // Kursor berwarna merah menyala ketika menghapus
+                cursorEl.style.backgroundColor = '#ff0000';
+                let backCount = 0;
+                function deleteChar() {
+                    if (backCount < step.count) {
+                        textBuffer = textBuffer.slice(0, -1);
+                        outputEl.textContent = textBuffer;
+                        backCount++;
+                        // Kecepatan menghapus backspace (40ms - 80ms)
+                        setTimeout(deleteChar, Math.random() * 40 + 40);
+                    } else {
+                        seqIndex++;
+                        setTimeout(runSequence, 200);
+                    }
+                }
+                deleteChar();
+            } 
+            
+            else if (step.type === 'wait') {
+                setTimeout(() => {
+                    seqIndex++;
+                    runSequence();
+                }, step.ms);
+            } 
+            
+            else if (step.type === 'newline') {
+                textBuffer += "\n";
+                outputEl.textContent = textBuffer;
+                seqIndex++;
+                setTimeout(runSequence, 400);
+            }
+
+            else if (step.type === 'html') {
+                // Kursor berwarna hijau menyala ketika menulis HTML/email
+                cursorEl.style.backgroundColor = '#00ff00';
+                outputEl.innerHTML = textBuffer + step.html;
+                textBuffer += outputEl.lastChild.outerHTML; 
+                seqIndex++;
+                setTimeout(runSequence, 200);
+            }
+        }
+
+        // Mulai animasi setelah jeda awal 1 detik
+        setTimeout(runSequence, 1000);
+    </script>
+</body>
+</html>
